@@ -436,17 +436,17 @@
 			compatible = "qcom,sm4450-gpi-dma", "qcom,sm6350-gpi-dma";
 			reg = <0x0 0x00900000 0x0 0x60000>;
 			interrupts = <GIC_SPI 244 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 247 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 248 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 249 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 250 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 253 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 254 IRQ_TYPE_LEVEL_HIGH>,
-			     	<GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH>;
+				<GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 247 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 248 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 249 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 250 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 253 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 254 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH>;
 			dma-channels = <12>;
 			dma-channel-mask = <0x3e>;
 			iommus = <&apps_smmu 0x176 0x0>;
@@ -505,6 +505,181 @@
 				pinctrl-names = "default";
 				status = "disabled";
 			};
+		};
+
+		cnoc3: interconnect@1510000 {
+			compatible = "qcom,sm4450-cnoc3";
+			reg = <0x0 0x01510000 0x0 0xf200>;
+			#interconnect-cells = <2>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+		};
+
+		config_noc: interconnect@1500000 {
+			compatible = "qcom,sm4450-cnoc2";
+			reg = <0x0 0x01500000 0x0 0x6200>;
+			#interconnect-cells = <2>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+		};
+
+		system_noc: interconnect@1680000 {
+			compatible = "qcom,sm4450-system-noc";
+			reg = <0x0 0x01680000 0x0 0x19080>;
+			#interconnect-cells = <2>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+		};
+
+		pcie_anoc: interconnect@16c0000 {
+			compatible = "qcom,sm4450-pcie-anoc";
+			reg = <0x0 0x016c0000 0x0 0x7080>;
+			#interconnect-cells = <2>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+			status = "disabled";
+		};
+
+		aggre1_noc: interconnect@16e0000 {
+			compatible = "qcom,sm4450-aggre1-noc";
+			reg = <0x0 0x016e0000 0x0 0x13080>;
+			#interconnect-cells = <2>;
+			clocks = <&gcc GCC_SDCC2_AHB_CLK>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+		};
+
+		aggre2_noc: interconnect@1700000 {
+			compatible = "qcom,sm4450-aggre2-noc";
+			reg = <0x0 0x01700000 0x0 0x1b080>;
+			#interconnect-cells = <2>;
+			clocks = <&rpmhcc RPMH_IPA_CLK>,
+				 <&gcc GCC_AGGRE_USB3_PRIM_AXI_CLK>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+		};
+
+		video_aggre_noc: interconnect@1760000 {
+			compatible = "qcom,sm4450-video-aggre-noc";
+			reg = <0x0 0x01760000 0x0 0x1100>;
+			#interconnect-cells = <2>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+			status = "disabled";
+		};
+
+		lpass_ag_noc: interconnect@3c40000 {
+			compatible = "qcom,sm4450-lpass-ag-noc";
+			reg = <0x0 0x03c40000 0x0 0x17200>;
+			#interconnect-cells = <2>;
+			qcom,bcm-voters = <&apps_bcm_voter>;
+			status = "disabled";
+		};
+
+		gpu: gpu@3d00000 {
+			status = "disabled";
+			compatible = "qcom,adreno-613.0", "qcom,adreno";
+			reg = <0x0 0x03d00000 0x0 0x40000>,
+		    	  <0x0 0x03d9e000 0x0 0x1000>,
+		    	  <0x0 0x03d61000 0x0 0x800>;
+			reg-names = "kgsl_3d0_reg_memory",
+				    "cx_mem",
+			    	"cx_dbgc";
+
+			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
+
+			clocks = <&gpucc GPU_CC_GX_GFX3D_CLK>,
+				 <&gpucc GPU_CC_AHB_CLK>,
+				 <&gcc GCC_DDRSS_GPU_AXI_CLK>,
+				 <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+				 <&gpucc GPU_CC_CX_GMU_CLK>,
+				 <&gpucc GPU_CC_CXO_CLK>,
+				 <&gpucc GPU_CC_HUB_CX_INT_CLK>;
+			clock-names = "core",
+				      "iface",
+			    	  "mem_iface",
+			    	  "alt_mem_iface",
+			    	  "gmu",
+			    	  "xo",
+			    	  "hub";
+
+			interconnects = <&gem_noc MASTER_GFX3D QCOM_ICC_TAG_ALWAYS
+					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>;
+			interconnect-names = "gfx-mem";
+
+			iommus = <&adreno_smmu 0 0x400>;
+			power-domains = <&rpmhpd RPMHPD_CX>;
+
+			operating-points-v2 = <&gpu_opp_table>;
+
+			qcom,gmu = <&gmu_wrapper>;
+
+			nvmem-cells = <&gpu_speed_bin>;
+			nvmem-cell-names = "speed_bin";
+
+			#cooling-cells = <2>;
+
+
+			zap-shader {
+				memory-region = <&gpu_microcode_mem>;
+				firmware-name = "qcom/sm4450/a613_zap.mbn";
+			};
+
+			gpu_opp_table: opp-table {
+				compatible = "operating-points-v2";
+
+				opp-340000000 {
+					opp-hz = /bits/ 64 <340000000>;
+					required-opps = <&rpmhpd_opp_low_svs>;
+					opp-peak-kBps = <2136718>;
+					opp-supported-hw = <0xf>;
+				};
+
+				opp-500000000 {
+					opp-hz = /bits/ 64 <500000000>;
+					required-opps = <&rpmhpd_opp_svs>;
+					opp-peak-kBps = <3972656>;
+					opp-supported-hw = <0xf>;
+				};
+
+				opp-605000000 {
+					opp-hz = /bits/ 64 <605000000>;
+					required-opps = <&rpmhpd_opp_svs_l1>;
+					opp-peak-kBps = <5285156>;
+					opp-supported-hw = <0xf>;
+				};
+
+				opp-765000000 {
+					opp-hz = /bits/ 64 <765000000>;
+					required-opps = <&rpmhpd_opp_nom>;
+					opp-peak-kBps = <6671875>;
+					opp-supported-hw = <0xf>;
+				};
+
+				opp-850000000 {
+					opp-hz = /bits/ 64 <850000000>;
+					required-opps = <&rpmhpd_opp_nom_l1>;
+					opp-peak-kBps = <8332031>;
+					opp-supported-hw = <0x7>;
+				};
+
+				opp-955000000 {
+					opp-hz = /bits/ 64 <955000000>;
+					required-opps = <&rpmhpd_opp_turbo>;
+					opp-peak-kBps = <8332031>;
+					opp-supported-hw = <0x7>;
+				};
+
+				opp-1010000000 {
+					opp-hz = /bits/ 64 <1010000000>;
+					required-opps = <&rpmhpd_opp_turbo_l1>;
+					opp-peak-kBps = <8332031>;
+					opp-supported-hw = <0x5>;
+				};
+			};
+		};
+
+		gmu_wrapper: gmu@3d6a000 {
+			compatible = "qcom,adreno-gmu-wrapper";
+			reg = <0x0 0x03d6a000 0x0 0x30000>;
+			reg-names = "gmu";
+			power-domains = <&gpucc GPU_CC_CX_GDSC>,
+					<&gpucc GPU_CC_GX_GDSC>;
+			power-domain-names = "cx", "gx";
+			status = "okay";
 		};
 
 		tcsr_mutex: hwlock@1f40000 {
